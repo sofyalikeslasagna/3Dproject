@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; overflow: hidden;">
+    <a-scene>
+        <a-assets>
+            <a-asset-item id="fish" src="scene.gltf"></a-asset-item>
+        </a-assets>
+
+        <!-- Camera Rig (Player) -->
+        <a-entity id="camera-rig" movement-controls>
+          <!-- Camera positioned above and behind the fish -->
+          <a-camera position="0 3 5" wasd-controls look-controls>
+            
+            <!-- Fish (Now a Child of the Camera Rig) -->
+            <a-entity 
+                id="fish-entity" 
+                gltf-model="#fish" 
+                position="0 -1.5 -4"
+                scale="0.01 0.01 -0.08"
+                rotation="0 0 0"
+                animation="property: position; to: 0 -1.3 -4; dir: alternate; dur: 1500; loop: true; easing: easeInOutSine">
+            </a-entity>
+        </a-entity>
+
+        <!-- Sky and Ground -->
+        <a-sky color="#99e0ff"></a-sky>
+        <a-plane position="0 0 0" rotation="-90 0 0" width="1120" height="1120" color="#f4a460"></a-plane>
+        
+        <!-- Containers for dynamically added objects -->
+        <a-entity id="cylinder-container"></a-entity>
+        <a-entity id="rock-container"></a-entity>
+
+        <a-text 
+    value="Hello, Fish!" 
+    position="0 4 -5" 
+    color="black" 
+    align="center"
+    width="20">
+</a-text>
+        <a-text 
+value="(Press 'r' to look at the fish's cute face)" 
+position="0 3.4 -5" 
+color="black" 
+align="center"
+width="7">
+</a-text>
+    </a-scene>
+
+    <script>
+      document.addEventListener("keydown", (event) => {
+            if (event.key === "r" || event.key === "R") {
+                let fish = document.getElementById("fish-entity");
+                let currentRotation = fish.getAttribute("rotation");
+
+                if (currentRotation.y === 180) {
+                    // If already flipped, reset to normal
+                    fish.setAttribute("rotation", { x: 0, y: 0, z: 0 });
+                    fish.setAttribute("scale", "0.01 0.01 0.01");
+                    fish.setAttribute("scale", "0.05 0.05 0.05");
+                } else {
+                    // Flip the fish to face the camera
+                    fish.setAttribute("scale", "0.01 0.01 0.01");
+                    fish.setAttribute("rotation", { x: 0, y: 180, z: 0 });
+                }
+            }
+        });
+        // Function to generate multiple cylinders (plants)
+        function generateCylinders() {
+            const container = document.getElementById("cylinder-container");
+            const numCylinders = 1000; // Adjust how many you want
+            
+            for (let i = 0; i < numCylinders; i++) {
+                let x = (Math.random() * 50) - 25; // Random X position (-25 to 25)
+                let z = (Math.random() * 50) - 25; // Random Z position (-25 to 25)
+
+                let cylinder = document.createElement("a-cylinder");
+                cylinder.setAttribute("position", `${x} 1 ${z}`);
+                cylinder.setAttribute("radius", "0.1");
+                cylinder.setAttribute("height", "2");
+                cylinder.setAttribute("color", "green");
+
+                container.appendChild(cylinder);
+            }
+        }
+
+        // Function to generate multiple rocks
+        function generateRocks() {
+            const container = document.getElementById("rock-container");
+            const numRocks = 100; // Adjust how many rocks you want
+            
+            for (let i = 0; i < numRocks; i++) {
+                let x = (Math.random() * 50) - 25; // Random X position (-25 to 25)
+                let z = (Math.random() * 50) - 25; // Random Z position (-25 to 25)
+                let size = Math.random() * 0.8 + 0.3; // Random size between 0.3 and 1.1
+
+                let rock = document.createElement("a-sphere");
+                rock.setAttribute("position", `${x} 0.5 ${z}`);
+                rock.setAttribute("radius", size);
+                rock.setAttribute("color", "gray");
+
+                container.appendChild(rock);
+            }
+        }
+
+        // Call the functions to generate objects
+        generateCylinders();
+        generateRocks();
+    </script>
+</body>
+</html>
